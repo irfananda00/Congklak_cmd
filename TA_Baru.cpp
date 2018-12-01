@@ -4,6 +4,7 @@
 
 int BIJI_YANG_DIGUNAKAN = 3;
 int TEMP_BIJI = 3;
+float TOLERANSI = 4.25;
 
 float AVG_BIJI = 5;
 
@@ -21,9 +22,12 @@ int lB = 16;
 //15 / A = Rumah pemain 1
 //16 / B = Rumah pemain 2
 
- int latchPin = 8; //8 STCP
- int dataPin = 11; //11 DS
- int clockPin = 12; //12 SHCP
+ int latchPin = 8; //8 STCP GREEN
+ int dataPin = 11; //11 DS BLUE
+ int clockPin = 12; //12 SHCP YELLOW
+
+ int playerAturn = 7;
+ int playerBturn = 6;
 
  int numberOfRegisters = 3;
 
@@ -55,6 +59,9 @@ void setup() {
   pinMode(clockPin, OUTPUT);
   msr.shift();
 
+  pinMode(playerAturn, OUTPUT);
+  pinMode(playerBturn, OUTPUT);
+
   randomSeed(analogRead(0));
 
   initial_state();
@@ -79,86 +86,54 @@ void initial_state() {
   cellB.tare();
 }
 
-int wc1 = -885; //-898
-int n1 = 0;
-float r1 = 0;
-int p1 = 0;
+int loopt = 0;
 
-int wc2 = -2121; //-1921
-int n2 = 0;
-float r2 = 0;
-int p2 = 0;
-
-int wc6 = -868; //-868
-int n6 = 0;
-float r6 = 0;
-int p6 = 0;
-
-int wc7 = -880; //-450
-int n7 = 0;
-float r7 = 0;
-int p7 = 0;
-
-int wc8 = -811; //-361
-int n8 = 0;
-float r8 = 0;
-int p8 = 0;
-
-int wc9 = -842; //-842
-int n9 = 0;
-float r9 = 0;
-int p9 = 0;
-
-int wc13 = -790; //-405
-int n13 = 0;
-float r13 = 0;
-int p13 = 0;
-
-int wc14 = -840; //-840
-int n14 = 0;
-float r14 = 0;
-int p14 = 0;
-
-// ^-------------------^
-
-int wc3 = -905; //-890
+int wc3 = -900; //-890
 int n3 = 0;
 float r3 = 0;
+float rt3 = 0;
 int p3 = 0;
 
 int wc4 = -2200; //-2200
 int n4 = 0;
 float r4 = 0;
+float rt4 = 0;
 int p4 = 0;
 
 int wc5 = -1160; //-1160
 int n5 = 0;
 float r5 = 0;
+float rt5 = 0;
 int p5 = 0;
 
 int wc10 = -762; //-762
 int n10 = 0;
 float r10 = 0;
+float rt10 = 0;
 int p10 = 0;
 
 int wc11 = -867; //-867
 int n11 = 0;
 float r11 = 0;
+float rt11 = 0;
 int p11 = 0;
 
 int wc12 = -871; //-871
 int n12 = 0;
 float r12 = 0;
+float rt12 = 0;
 int p12 = 0;
 
-int wcA = -810; //-810
+int wcA = -805; //-805
 int A = 0;
 float rA = 0;
+float rtA = 0;
 int pA = 0;
 
-int wcB = -847; //-850
+int wcB = -865; //-865
 int B = 0;
 float rB = 0;
+float rtB = 0;
 int pB = 0;
 
 void loop() {
@@ -167,14 +142,31 @@ void loop() {
 
   printValue();
 
-  // congklak_game();
+//  msr.set_shift(1);
+
+  congklak_game();
 
 //  delay(200);
+}
+
+void hitung_rata2(){
+  loopt = loopt + 1;
+  
+  rtB = rtB + rB;
+  rtA = rtA + rA;
+  rt3 = rt3 + r3;
+  rt4 = rt4 + r4;
+  rt5 = rt5 + r5;
+  rt10 = rt10 + r10;
+  rt11 = rt11 + r11;
+  rt12 = rt12 + r12;
 }
 
 void congklak_game() {
   switch (GAME_STATE) {
     case 0:
+      digitalWrite(playerAturn, LOW);
+      digitalWrite(playerBturn, LOW);
       Serial.println("---------- PERSIAPAN PERMAINAN !!! -------------");
       //Periksa apakah lumbung sudah terisi biji
       if (isSudahSiapMain()) {
@@ -185,9 +177,15 @@ void congklak_game() {
         if (r < 150) {
           Serial.println("---------- GILIRAN PEMAIN 1 !!! -------------");
           giliran_pemain = 1;
+          digitalWrite(playerAturn, HIGH);
+          digitalWrite(playerBturn, LOW);
+          //nyala giliran 1
         } else {
           Serial.println("---------- GILIRAN PEMAIN 2 !!! -------------");
           giliran_pemain = 2;
+          digitalWrite(playerAturn, LOW);
+          digitalWrite(playerBturn, HIGH);
+          //nyala giliran 2
         }
 
         GAME_STATE = 1;
@@ -220,70 +218,71 @@ void congklak_game() {
       } else if ( (lumbung_sekarang == lA && giliran_pemain == 1) ||
                   (lumbung_sekarang == lB && giliran_pemain == 2) ||
                   (lumbung_sekarang == 0 && giliran_pemain == 1) ||
-                  (lumbung_sekarang == 0 && giliran_pemain == 2) ) {
+                  (lumbung_sekarang == 0 && giliran_pemain == 2) ) {                    
+        lumbung_terpilih = false;
         if (giliran_pemain == 1) {          
           if (n3 != 0 && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
             Serial.println("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : 3 -------------");
             msr.set_shift(20);
-            //TODO: nyala hijau
+            //  nyala hijau
           }
           if (n4 != 0 && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
             Serial.println("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : 4 -------------");
             msr.set_shift(21);
-            //TODO: nyala hijau
+            //  nyala hijau
           }
           if (n5 != 0 && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
             Serial.println("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : 5 -------------");
             msr.set_shift(17);
-            //TODO: nyala hijau
+            //  nyala hijau
           }
         } else {
           if (n10 != 0 && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
             Serial.println("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : 10 -------------");
             msr.set_shift(11);
-            //TODO: nyala hijau
+            //  nyala hijau
           }
           if (n11 != 0 && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
             Serial.println("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : 11 -------------");
             msr.set_shift(2);
-            //TODO: nyala hijau
+            //  nyala hijau
           }
           if (n12 != 0 && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
             Serial.println("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : 12 -------------");
             msr.set_shift(7);
-            //TODO: nyala hijau
+            //  nyala hijau
           }
         }
-        //TODO: tampilkan yang boleh dipilih lumbung
+        //  tampilkan yang boleh dipilih lumbung
         detect_lumbung_dipilih_dari_rumah();
       } else {
-        //TODO: tampilkan yang boleh dipilih lumbung lumbung_sekarang
+        //  tampilkan yang boleh dipilih lumbung lumbung_sekarang
         Serial.print("---------- SILAHKAN AMBIL BIJI DARI LUMBUNG : ");
         Serial.print(lumbung_sekarang);
         Serial.println(" -------------");
         if(lumbung_sekarang==3){
           msr.set_shift(20);
-          //TODO: nyala hijau
+          //  nyala hijau
         }
         else if(lumbung_sekarang==4){
           msr.set_shift(21);
-          //TODO: nyala hijau
+          //  nyala hijau
         }
         else if(lumbung_sekarang==5){
           msr.set_shift(17);
-          //TODO: nyala hijau
+          //  nyala hijau
         }
         else if(lumbung_sekarang==10){
           msr.set_shift(11);
-          //TODO: nyala hijau
+          //  nyala hijau
         }
         else if(lumbung_sekarang==11){
           msr.set_shift(2);
-          //TODO: nyala hijau
+          //  nyala hijau
         }
         else if(lumbung_sekarang==12){
           msr.set_shift(7);
-          //TODO: nyala hijau
+          //  nyala hijau
         }
         detect_lumbung_dipilih();
       }
@@ -325,11 +324,22 @@ void detect_lumbung() {
   detectB();
 }
 
+
 void permainan_selesai() {
+  digitalWrite(playerAturn, LOW);
+  digitalWrite(playerBturn, LOW);
   Serial.println("---------- PERMAINAN SELESAI !!! -------------");
   if (A > B) {
+    msr.set_shift(12);
+    delay(200);
+    msr.clear_shift(12);
+    delay(200);
     Serial.println("---------- PEMENANG : PEMAIN 1 -------------");
   } else if (A < B) {
+    msr.set_shift(4);
+    delay(200);
+    msr.clear_shift(4);
+    delay(200);
     Serial.println("---------- PEMENANG : PEMAIN 2 -------------");
   }
 }
@@ -340,7 +350,7 @@ void show_next_lumbung() {
     if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
       lumbung_lanjut = 10;
       msr.set_shift(10);
-      //TODO: nyala kuning
+      //  nyala kuning
     }
   }
   // B / 16
@@ -348,44 +358,44 @@ void show_next_lumbung() {
     if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
       lumbung_lanjut = 3;
       msr.set_shift(18);
-      //TODO: nyala kuning
+      //  nyala kuning
     }
   } 
   // 1-6
   else if ( (lumbung_sekarang == 3) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = 4;
     msr.set_shift(22);
-    //TODO: nyala kuning
+    //  nyala kuning
   } else if ( (lumbung_sekarang == 4) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = 5;
     msr.set_shift(16);
-    //TODO: nyala kuning
+    //  nyala kuning
   } else if ( (lumbung_sekarang == 5) && (giliran_pemain == 1) && (BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = lA;
     msr.set_shift(13);
-    //TODO: nyala kuning
+    //  nyala kuning
   } else if ( (lumbung_sekarang == 5) && (giliran_pemain == 2) && (BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = 10;
     msr.set_shift(10);
-    //TODO: nyala kuning
+    //  nyala kuning
   }
   // 8-13
   else if ( (lumbung_sekarang == 10) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = 11;
     msr.set_shift(0);
-    //TODO: nyala kuning
+    //  nyala kuning
   } else if ( (lumbung_sekarang == 11) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = 12;
     msr.set_shift(8);
-    //TODO: nyala kuning
+    //  nyala kuning
   } else if ( (lumbung_sekarang == 12) && (giliran_pemain == 2) && (BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = lB;
     msr.set_shift(3);
-    //TODO: nyala kuning
+    //  nyala kuning
   } else if ( (lumbung_sekarang == 12) && (giliran_pemain == 1) && (BIJI_YANG_DIGUNAKAN==3) ) {
     lumbung_lanjut = 3;
     msr.set_shift(18);
-    //TODO: nyala kuning
+    //  nyala kuning
   }
   // else {
   //   lumbung_lanjut = lumbung_sekarang + 1;
@@ -394,38 +404,42 @@ void show_next_lumbung() {
   Serial.print(lumbung_lanjut);
   Serial.println(" -------------");
 }
-
+// TODO: Perbaiki aturan
 void detect_if_tembak_diambil() {
-  if ( lumbung_sekarang == 3 || lumbung_sekarang == 12 ) {
-    msr.set_shift(20);
-    msr.set_shift(7);
-    //TODO: nyala hijau
-    //TODO: nyala hijau
+  if ( lumbung_sekarang == 3 || lumbung_sekarang == 12 ) {        
+    if (n3 == 0){
+      msr.clear_shift(20);
+    }else{
+      msr.set_shift(20);
+    }
+    if (n12 == 0){
+      msr.clear_shift(7);
+    }else{
+      msr.set_shift(7);
+    }
+    //  nyala hijau
+    //  nyala hijau
     Serial.println("---------- AMBIL BIJI PADA LUMBUNG 3 dan 12 -------------");
     if ( (n3 == 0) && (n12 == 0) ) {
       if (giliran_pemain == 1) {
-        msr.set_shift(12);
-        //TODO: nyala hijau
+        msr.set_shift(13);
+        //  nyala kuning
         Serial.println("---------- MASUKKAN BIJI KE RUMAH A -------------");
-        if ( (pA + (p3 + p12) == A) ) {
-          msr.clear_shift(20);
-          msr.clear_shift(7);
-          msr.clear_shift(12);
-          //TODO: semua mati
+        if ( (pA + (p3 + p12) == A) ) {          
+          msr.clear_shift(13);
+          //  semua mati
           p3 = n3;
           p12 = n12;
           pA = A;
           GAME_STATE = 4;
         }
-      } else if (giliran_pemain == 2) {
-        msr.set_shift(4);
-        //TODO: nyala hijau
+      } else if (giliran_pemain == 2) {        
+        msr.set_shift(3);
+        //  nyala kuning
         Serial.println("---------- MASUKKAN BIJI KE RUMAH B -------------");
-        if ( (pB + (p3 + p12) == B) ) {
-          msr.clear_shift(20);
-          msr.clear_shift(7);
-          msr.clear_shift(4);
-          //TODO: semua mati
+        if ( (pB + (p3 + p12) == B) ) {          
+          msr.clear_shift(3);
+          //  semua mati
           p3 = n3;
           p12 = n12;
           pB = B;
@@ -433,36 +447,41 @@ void detect_if_tembak_diambil() {
         }
       }
     }
+    check_aturan_tembak(3,12);
   } else if ( lumbung_sekarang == 4 || lumbung_sekarang == 11 ) {
-    msr.set_shift(21);
-    msr.set_shift(2);
-    //TODO: nyala hijau
-    //TODO: nyala hijau
+    if (n4 == 0){
+      msr.clear_shift(21);
+    }else{
+      msr.set_shift(21);
+    }
+    if (n11 == 0){
+      msr.clear_shift(2);
+    }else{
+      msr.set_shift(2);
+    }
+    //  nyala hijau
+    //  nyala hijau
     Serial.println("---------- AMBIL BIJI PADA LUMBUNG 4 dan 11 -------------");
     if ( (n4 == 0) && (n11 == 0) ) {
       if (giliran_pemain == 1) {
-        msr.set_shift(12);
-        //TODO: nyala hijau
+        msr.set_shift(13);
+        //  nyala kuning
         Serial.println("---------- MASUKKAN BIJI KE RUMAH A -------------");
-        if ( (pA + (p4 + p11) == A) ) {
-          msr.clear_shift(21);
-          msr.clear_shift(2);
-          msr.clear_shift(12);
-          //TODO: semua mati
+        if ( (pA + (p4 + p11) == A) ) {          
+          msr.clear_shift(13);
+          //  semua mati
           p4 = n4;
           p11 = n11;
           pA = A;
           GAME_STATE = 4;
         }
-      } else if (giliran_pemain == 2) {
-        msr.set_shift(4);
-        //TODO: nyala hijau
+      } else if (giliran_pemain == 2) {        
+        msr.set_shift(3);
+        //  nyala kuning
         Serial.println("---------- MASUKKAN BIJI KE RUMAH B -------------");
-        if ( (pB + (p4 + p11) == B) ) {
-          msr.clear_shift(21);
-          msr.clear_shift(2);
-          msr.clear_shift(12);
-          //TODO: semua mati
+        if ( (pB + (p4 + p11) == B) ) {          
+          msr.clear_shift(3);
+          //  semua mati
           p4 = n4;
           p11 = n11;
           pB = B;
@@ -470,36 +489,41 @@ void detect_if_tembak_diambil() {
         }
       }
     }
+    check_aturan_tembak(4,11);
   } else if ( lumbung_sekarang == 5 || lumbung_sekarang == 10 ) {
-    msr.set_shift(17);
-    msr.set_shift(11);
-    //TODO: nyala hijau
-    //TODO: nyala hijau
+    if (n5 == 0){
+      msr.clear_shift(17);
+    }else{
+      msr.set_shift(17);
+    }
+    if (n10 == 0){
+      msr.clear_shift(11);
+    }else{
+      msr.set_shift(11);
+    }
+    //  nyala hijau
+    //  nyala hijau
     Serial.println("---------- AMBIL BIJI PADA LUMBUNG 5 dan 10 -------------");
     if ( (n5 == 0) && (n10 == 0) ) {
       if (giliran_pemain == 1) {
-        msr.set_shift(12);
-        //TODO: nyala hijau
+        msr.set_shift(13);
+        //  nyala kuning
         Serial.println("---------- MASUKKAN BIJI KE RUMAH A -------------");
-        if ( (pA + (p5 + p10) == A) ) {
-          msr.clear_shift(17);
-          msr.clear_shift(11);
-          msr.clear_shift(12);
-          //TODO: semua mati
+        if ( (pA + (p5 + p10) == A) ) {          
+          msr.clear_shift(13);
+          //  semua mati
           p5 = n5;
           p10 = n10;
           pA = A;
           GAME_STATE = 4;
         }
       } else if (giliran_pemain == 2) {
-        msr.set_shift(4);
-        //TODO: nyala hijau
+        msr.set_shift(3);
+        //  nyala hijau
         Serial.println("---------- MASUKKAN BIJI KE RUMAH B -------------");
-        if ( (pB + (p5 + p10) == B) ) {
-          msr.clear_shift(17);
-          msr.clear_shift(11);
-          msr.clear_shift(4);
-          //TODO: semua mati
+        if ( (pB + (p5 + p10) == B) ) {          
+          msr.clear_shift(3);
+          //  semua mati
           p5 = n5;
           p10 = n10;
           pB = B;
@@ -507,26 +531,29 @@ void detect_if_tembak_diambil() {
         }
       }
     }
-  } else if (
-    ( (lumbung_sekarang == 1) || (lumbung_sekarang == 14) && ((n1 == 0) || (n14 == 0)) ) ||
-    ( (lumbung_sekarang == 2) || (lumbung_sekarang == 13) && ((n2 == 0) || (n13 == 0)) ) ||
-    ( (lumbung_sekarang == 3) || (lumbung_sekarang == 12) && ((n3 == 0) || (n12 == 0)) ) ||
-    ( (lumbung_sekarang == 4) || (lumbung_sekarang == 11) && ((n4 == 0) || (n11 == 0)) ) ||
-    ( (lumbung_sekarang == 5) || (lumbung_sekarang == 10) && ((n5 == 0) || (n10 == 0)) ) ||
-    ( (lumbung_sekarang == 6) || (lumbung_sekarang == 9) && ((n6 == 0) || (n9 == 0)) ) ||
-    ( (lumbung_sekarang == 7) || (lumbung_sekarang == 8) && ((n7 == 0) || (n8 == 0)) )
-  ) {
-    check_aturan();
-  }
+    check_aturan_tembak(5,10);
+  }   
+
+  // else if (
+  //   ( (lumbung_sekarang == 3) || (lumbung_sekarang == 12) && ((n3 == 0) || (n12 == 0)) ) ||
+  //   ( (lumbung_sekarang == 4) || (lumbung_sekarang == 11) && ((n4 == 0) || (n11 == 0)) ) ||
+  //   ( (lumbung_sekarang == 5) || (lumbung_sekarang == 10) && ((n5 == 0) || (n10 == 0)) ) 
+  // ) {
+  //   check_aturan();
+  // } 
 }
 
 void ganti_giliran() {
   if (giliran_pemain == 1) {
     giliran_pemain = 2;
+    digitalWrite(playerAturn, LOW);
+    digitalWrite(playerBturn, HIGH);
     lumbung_sekarang = 0;
     Serial.println("---------- GILIRAN PEMAIN 2 !!! -------------");
   } else if (giliran_pemain == 2) {
     giliran_pemain = 1;
+    digitalWrite(playerAturn, HIGH);
+    digitalWrite(playerBturn, LOW);
     lumbung_sekarang = 0;
     Serial.println("---------- GILIRAN PEMAIN 1 !!! -------------");
   }
@@ -543,8 +570,8 @@ void check_game_selesai() {
 }
 
 bool check_giliran_selesai() {
+  //permainan selesai karena biji pada lumbung sudah habis
   if ( giliran_pemain == 1 && (n3 == 0) && (n4 == 0) && (n5 == 0) ) {
-    //permainan selesai karena biji pada lumbung sudah habis
     GAME_STATE = 4;
     return true;
   } else if ( giliran_pemain == 2 && (n10 == 0) && (n11 == 0) && (n12 == 0) ) {
@@ -555,7 +582,7 @@ bool check_giliran_selesai() {
 }
 
 void clear_all_green(){
-  //TODO: semua hijau mati
+  //  semua hijau mati
   msr.clear_shift(20);
   msr.clear_shift(21);
   msr.clear_shift(17);
@@ -568,42 +595,42 @@ void clear_all_green(){
 
 void detect_lumbung_dipilih_dari_rumah() {
   //Mendeteksi lumbung yang dipilih pemain 1 = 1 2 3 4 5 6 7 || pemain 2 = 8 9 10 11 12 13 14
-  if ( (p3 != 0) && (n3 == 0) && (n1 == p1) && (n2 == p2) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
+  if ( (p3 != 0) && (n3 == 0) && (n4 == p4) && (n5 == p5) && (n10 == p10) && (n11 == p11) && (n12 == p12) && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
     lumbung_sekarang = 3;
     biji_ditangan = p3;
     p3 = n3;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 3 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p4 != 0) && (n4 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
+  } else if ( (p4 != 0) && (n4 == 0) && (n3 == p3) && (n5 == p5)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
     lumbung_sekarang = 4;
     biji_ditangan = p4;
     p4 = n4;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 4 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p5 != 0) && (n5 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
+  } else if ( (p5 != 0) && (n5 == 0)  && (n3 == p3) && (n4 == p4)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
     lumbung_sekarang = 5;
     biji_ditangan = p5;
     p5 = n5;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 5 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p10 != 0) && (n10 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
+  } else if ( (p10 != 0) && (n10 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n11 == p11) && (n12 == p12)   && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
     lumbung_sekarang = 10;
     biji_ditangan = p10;
     p10 = n10;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 10 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p11 != 0) && (n11 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n12 == p12) && (n13 == p13) && (n14 == p14) && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
+  } else if ( (p11 != 0) && (n11 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n12 == p12)   && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
     lumbung_sekarang = 11;
     biji_ditangan = p11;
     p11 = n11;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 11 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p12 != 0) && (n12 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n13 == p13) && (n14 == p14) && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
+  } else if ( (p12 != 0) && (n12 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n11 == p11)   && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
     lumbung_sekarang = 12;
     biji_ditangan = p12;
     p12 = n12;
@@ -620,42 +647,42 @@ void detect_lumbung_dipilih_dari_rumah() {
 
 void detect_lumbung_dipilih() {
   //Mendeteksi lumbung yang dipilih pemain
-  if ( (p3 != 0) && (n3 == 0) && (n1 == p1) && (n2 == p2) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && (lumbung_sekarang == 3) ) {
+  if ( (p3 != 0) && (n3 == 0)  && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && (lumbung_sekarang == 3) ) {
     lumbung_sekarang = 3;
     biji_ditangan = p3;
     p3 = n3;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 3 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p4 != 0) && (n4 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && (lumbung_sekarang == 4) ) {
+  } else if ( (p4 != 0) && (n4 == 0)  && (n3 == p3) && (n5 == p5)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && (lumbung_sekarang == 4) ) {
     lumbung_sekarang = 4;
     biji_ditangan = p4;
     p4 = n4;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 4 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p5 != 0) && (n5 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && (lumbung_sekarang == 5) ) {
+  } else if ( (p5 != 0) && (n5 == 0)  && (n3 == p3) && (n4 == p4)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && (lumbung_sekarang == 5) ) {
     lumbung_sekarang = 5;
     biji_ditangan = p5;
     p5 = n5;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 5 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p10 != 0) && (n10 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n11 == p11) && (n12 == p12) && (n13 == p13) && (n14 == p14) && (lumbung_sekarang == 10) ) {
+  } else if ( (p10 != 0) && (n10 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n11 == p11) && (n12 == p12)   && (lumbung_sekarang == 10) ) {
     lumbung_sekarang = 10;
     biji_ditangan = p10;
     p10 = n10;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 10 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p11 != 0) && (n11 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n12 == p12) && (n13 == p13) && (n14 == p14) && (lumbung_sekarang == 11) ) {
+  } else if ( (p11 != 0) && (n11 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n12 == p12)   && (lumbung_sekarang == 11) ) {
     lumbung_sekarang = 11;
     biji_ditangan = p11;
     p11 = n11;
     GAME_STATE = 2;
     Serial.println("---------- LUMBUNG 11 DIPILIH !!! -------------");
     lumbung_terpilih = true;
-  } else if ( (p12 != 0) && (n12 == 0) && (n1 == p1) && (n2 == p2) && (n3 == p3) && (n4 == p4) && (n5 == p5) && (n6 == p6) && (n7 == p7) && (n8 == p8) && (n9 == p9) && (n10 == p10) && (n11 == p11) && (n13 == p13) && (n14 == p14) && (lumbung_sekarang == 12) ) {
+  } else if ( (p12 != 0) && (n12 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n11 == p11)   && (lumbung_sekarang == 12) ) {
     lumbung_sekarang = 12;
     biji_ditangan = p12;
     p12 = n12;
@@ -670,280 +697,523 @@ void detect_lumbung_dipilih() {
     clear_all_green();
   }
 }
-
+//TODO: Ketika sensor mendeteksi beban lebih krn ada tangan yang mengambil biji, jangan dideteksi pelanggaran
 void check_aturan() {  
-  if ( n3 < p3 ) {
+  if( r3 > 70 ){
+    msr.clear_shift(18);
+    msr.clear_shift(19);
+    //  lampu mati
+  }else if ( n3 < p3 ) {
     clear_all_green();
     msr.set_shift(18);
-    //TODO: semua hijau mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(19);
+    //  semua hijau mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 3 KURANG BIJI !!! -------------");
   } else if ( n3 == p3 ) {
     msr.clear_shift(18);
     msr.clear_shift(19);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( n3 > p3 ) {
     clear_all_green();
     msr.set_shift(19);
-    //TODO: semua hijau mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(18);
+    //  semua hijau mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG 3 LEBIH BIJI !!! -------------");
   }
-  if ( n4 < p4 ) {
+  if( r4 > 70 ){
+    msr.clear_shift(22);
+    msr.clear_shift(23);
+    //  lampu mati
+  }else if ( n4 < p4 ) {
     clear_all_green();
     msr.set_shift(22);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(23);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 4 KURANG BIJI !!! -------------");
   } else if ( n4 == p4 ) {
     msr.clear_shift(22);
     msr.clear_shift(23);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( n4 > p4 ) {
     clear_all_green();
     msr.set_shift(23);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(22);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG 4 LEBIH BIJI !!! -------------");
   }
-  if ( n5 < p5 ) {
+  if( r5 > 70 ){
+    msr.clear_shift(16);
+    msr.clear_shift(15);
+    //  lampu mati
+  }else if ( n5 < p5 ) {
     clear_all_green();
     msr.set_shift(16);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(15);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 5 KURANG BIJI !!! -------------");
   } else if ( n5 == p5 ) {
     msr.clear_shift(16);
     msr.clear_shift(15);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( n5 > p5 ) {
     clear_all_green();
     msr.set_shift(15);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(16);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG 5 LEBIH BIJI !!! -------------");
   }
-  if ( n10 < p10 ) {
+  if( r10 > 70 ){
+    msr.clear_shift(10);
+    msr.clear_shift(9);
+    //  lampu mati
+  }else if ( n10 < p10 ) {
     clear_all_green();
     msr.set_shift(10);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(9);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 10 KURANG BIJI !!! -------------");
   } else if ( n10 == p10 ) {
     msr.clear_shift(10);
     msr.clear_shift(9);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( n10 > p10 ) {
     clear_all_green();
     msr.set_shift(9);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(10);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG 10 LEBIH BIJI !!! -------------");
   }
-  if ( n11 < p11 ) {
+  if( r11 > 70 ){
+    msr.clear_shift(1);
+    msr.clear_shift(0);
+    //  lampu mati
+  }else if ( n11 < p11 ) {
     clear_all_green();
     msr.set_shift(0);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)    
+    msr.clear_shift(1);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)    
     Serial.println("---------- LUMBUNG 11 KURANG BIJI !!! -------------");
   } else if ( n11 == p11 ) {
     msr.clear_shift(1);
     msr.clear_shift(0);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( n11 > p11 ) {
     clear_all_green();
     msr.set_shift(1);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(0);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG 11 LEBIH BIJI !!! -------------");
   }
-  if ( n12 < p12 ) {
+  if( r12 > 70 ){
+    msr.clear_shift(6);
+    msr.clear_shift(8);
+    //  lampu mati
+  }else if ( n12 < p12 ) {
     clear_all_green();
     msr.set_shift(8);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(6);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 12 KURANG BIJI !!! -------------");
   } else if ( n12 == p12 ) {
     msr.clear_shift(6);
     msr.clear_shift(8);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( n12 > p12 ) {
     clear_all_green();
     msr.set_shift(6);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(8);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG 12 LEBIH BIJI !!! -------------");
   }
   if ( A < pA ) {
     clear_all_green();
     msr.set_shift(13);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(14);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG A KURANG BIJI !!! -------------");
   } else if ( A == pA ) {
     msr.clear_shift(14);
     msr.clear_shift(13);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( A > pA ) {
     clear_all_green();
     msr.set_shift(14);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(13);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG A LEBIH BIJI !!! -------------");
   }
   if ( B < pB ) {
     clear_all_green();
     msr.set_shift(3);
-    //TODO: semua mati
-    //TODO: lampu kuning (bijinya kurang)
+    msr.clear_shift(5);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG B KURANG BIJI !!! -------------");
   } else if ( B == pB ) {
     msr.clear_shift(5);
     msr.clear_shift(3);
-    //TODO: lampu mati
+    //  lampu mati
   } else if ( B > pB ) {
     clear_all_green();
     msr.set_shift(5);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    msr.clear_shift(3);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG B LEBIH BIJI !!! -------------");
+  }
+}
+
+void check_aturan_tembak(int lumb1, int lumb2) {  
+  if( r3 > 70 ){
+    msr.clear_shift(18);
+    msr.clear_shift(19);
+    // do nothing
+  }else if ( n3 < p3 ) {
+    if( lumb1 != 3 ){
+      clear_all_green();
+      msr.set_shift(18);
+      msr.clear_shift(19);
+      //  semua hijau mati
+      //  lampu kuning (bijinya kurang)
+      Serial.println("---------- LUMBUNG 3 KURANG BIJI !!! -------------");
+    }
+  } else if ( n3 > p3 ) {
+    clear_all_green();
+    msr.set_shift(19);
+    msr.clear_shift(18);
+    //  semua hijau mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG 3 LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(18);
+    msr.clear_shift(19);
+    //  lampu mati
+  }
+  if( r4 > 70 ){
+    msr.clear_shift(22);
+    msr.clear_shift(23);
+    // do nothing
+  }else if ( n4 < p4 ) {
+    if( lumb1 != 4 ){
+      clear_all_green();
+      msr.set_shift(22);
+      msr.clear_shift(23);
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
+      Serial.println("---------- LUMBUNG 4 KURANG BIJI !!! -------------");
+    }
+  } else if ( n4 > p4 ) {
+    clear_all_green();
+    msr.set_shift(23);
+    msr.clear_shift(22);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG 4 LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(22);
+    msr.clear_shift(23);
+    //  lampu mati
+  }
+  if( r5 > 70 ){
+    msr.clear_shift(16);
+    msr.clear_shift(15);
+    // do nothing
+  }else if ( n5 < p5 ) {
+    if( lumb1 != 5 ){
+      clear_all_green();
+      msr.set_shift(16);
+      msr.clear_shift(15);
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
+      Serial.println("---------- LUMBUNG 5 KURANG BIJI !!! -------------");
+    }
+  } else if ( n5 > p5 ) {
+    clear_all_green();
+    msr.set_shift(15);
+    msr.clear_shift(16);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG 5 LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(16);
+    msr.clear_shift(15);
+    //  lampu mati
+  }
+  if( r10 > 70 ){
+    msr.clear_shift(10);
+    msr.clear_shift(9);
+    // do nothing
+  }else if ( n10 < p10 ) {
+    if( lumb2 != 10 ){
+      clear_all_green();
+      msr.set_shift(10);
+      msr.clear_shift(9);
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
+      Serial.println("---------- LUMBUNG 10 KURANG BIJI !!! -------------");
+    }
+  } else if ( n10 > p10 ) {
+    clear_all_green();
+    msr.set_shift(9);
+    msr.clear_shift(10);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG 10 LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(10);
+    msr.clear_shift(9);
+    //  lampu mati
+  }
+  if( r11 > 70 ){
+    msr.clear_shift(0);
+    msr.clear_shift(1);
+    // do nothing
+  }else if ( n11 < p11 ) {
+    if( lumb2 != 11 ){
+      clear_all_green();
+      msr.set_shift(0);
+      msr.clear_shift(1);
+      //  semua mati
+      //  lampu kuning (bijinya kurang)    
+      Serial.println("---------- LUMBUNG 11 KURANG BIJI !!! -------------");
+    }
+  } else if ( n11 > p11 ) {
+    clear_all_green();
+    msr.set_shift(1);
+    msr.clear_shift(0);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG 11 LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(1);
+    msr.clear_shift(0);
+    //  lampu mati
+  }
+  if( r12 > 70 ){
+    msr.clear_shift(6);
+    msr.clear_shift(8);
+    // do nothing
+  }else if ( n12 < p12 ) {
+    if( lumb2 != 12 ){
+      clear_all_green();
+      msr.set_shift(8);
+      msr.clear_shift(6);
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
+      Serial.println("---------- LUMBUNG 12 KURANG BIJI !!! -------------");
+    }
+  } else if ( n12 > p12 ) {
+    clear_all_green();
+    msr.set_shift(6);
+    msr.clear_shift(8);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG 12 LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(6);
+    msr.clear_shift(8);
+    //  lampu mati
+  }
+  if ( A < pA ) {
+    clear_all_green();
+    msr.set_shift(13);
+    msr.clear_shift(14);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
+    Serial.println("---------- LUMBUNG A KURANG BIJI !!! -------------");
+  } else if ( A > pA ) {
+    clear_all_green();
+    msr.set_shift(14);
+    msr.clear_shift(13);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG A LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(14);
+    msr.clear_shift(13);
+    //  lampu mati
+  }
+  if ( B < pB ) {
+    clear_all_green();
+    msr.set_shift(3);
+    msr.clear_shift(5);
+    //  semua mati
+    //  lampu kuning (bijinya kurang)
+    Serial.println("---------- LUMBUNG B KURANG BIJI !!! -------------");
+  } else if ( B > pB ) {
+    clear_all_green();
+    msr.set_shift(5);
+    msr.clear_shift(3);
+    //  semua mati
+    //  lampu merah (bijinya lebih)
+    Serial.println("---------- LUMBUNG B LEBIH BIJI !!! -------------");
+  } else {
+    msr.clear_shift(5);
+    msr.clear_shift(3);
+    //  lampu mati
   }
 }
 
 bool isSudahSiapMain() {  
   if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
-    if ( n3 < BIJI_YANG_DIGUNAKAN ) {
+    if( n3 > 70 ){
+    // do nothing
+    }else if ( n3 < BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(18);
-      //TODO: semua mati
-      //TODO: lampu kuning (bijinya kurang)
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 3 KURANG BIJI !!! -------------");
     } else if ( n3 == BIJI_YANG_DIGUNAKAN ) {
       msr.clear_shift(19);
       msr.clear_shift(18);
-      //TODO: lampu mati
+      //  lampu mati
     } else if ( n3 > BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(19);
-      //TODO: semua mati
-      //TODO: lampu merah (bijinya lebih)
+      //  semua mati
+      //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 3 LEBIH BIJI !!! -------------");
     }
   }
   if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
-    if ( n4 < BIJI_YANG_DIGUNAKAN ) {
+    if( n4 > 70 ){
+    // do nothing
+    }else if ( n4 < BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(22);
-      //TODO: semua mati
-      //TODO: lampu kuning (bijinya kurang)
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 4 KURANG BIJI !!! -------------");
     } else if ( n4 == BIJI_YANG_DIGUNAKAN ) {
       msr.clear_shift(23);
       msr.clear_shift(22);
-      //TODO: lampu mati
+      //  lampu mati
     } else if ( n4 > BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(23);
-      //TODO: semua mati
-      //TODO: lampu merah (bijinya lebih)
+      //  semua mati
+      //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 4 LEBIH BIJI !!! -------------");
     }
   }
   if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
-    if ( n5 < BIJI_YANG_DIGUNAKAN ) {
+    if( n5 > 70 ){
+    // do nothing
+    }else if ( n5 < BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(16);
-      //TODO: semua mati
-      //TODO: lampu kuning (bijinya kurang)
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 5 KURANG BIJI !!! -------------");
     } else if ( n5 == BIJI_YANG_DIGUNAKAN ) {
       msr.clear_shift(15);
       msr.clear_shift(16);
-      //TODO: lampu mati
+      //  lampu mati
     } else if ( n5 > BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(15);
-      //TODO: semua mati
-      //TODO: lampu merah (bijinya lebih)
+      //  semua mati
+      //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 5 LEBIH BIJI !!! -------------");
     }
   }
   if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
-    if ( n10 < BIJI_YANG_DIGUNAKAN ) {
+    if( n10 > 70 ){
+    // do nothing
+    }else if ( n10 < BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(10);
-      //TODO: semua mati
-      //TODO: lampu kuning (bijinya kurang)
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 10 KURANG BIJI !!! -------------");
     } else if ( n10 == BIJI_YANG_DIGUNAKAN ) {
       msr.clear_shift(9);
       msr.clear_shift(10);
-      //TODO: lampu mati
+      //  lampu mati
     } else if ( n10 > BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(9);
-      //TODO: semua mati
-      //TODO: lampu merah (bijinya lebih)
+      //  semua mati
+      //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 10 LEBIH BIJI !!! -------------");
     }
   }
   if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
-    if ( n11 < BIJI_YANG_DIGUNAKAN ) {
+    if( n11 > 70 ){
+    // do nothing
+    }else if ( n11 < BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(0);
-      //TODO: semua mati
-      //TODO: lampu kuning (bijinya kurang)
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 11 KURANG BIJI !!! -------------");
     } else if ( n11 == BIJI_YANG_DIGUNAKAN ) {
       msr.clear_shift(1);
       msr.clear_shift(0);
-      //TODO: lampu mati
+      //  lampu mati
     } else if ( n11 > BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(1);
-      //TODO: semua mati
-      //TODO: lampu merah (bijinya lebih)
+      //  semua mati
+      //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 11 LEBIH BIJI !!! -------------");
     }
   }
   if( (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ){
-    if ( n12 < BIJI_YANG_DIGUNAKAN ) {
+    if( n12 > 70 ){
+    // do nothing
+    }else if ( n12 < BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(8);
-      //TODO: semua mati
-      //TODO: lampu kuning (bijinya kurang)
+      //  semua mati
+      //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 12 KURANG BIJI !!! -------------");
     } else if ( n12 == BIJI_YANG_DIGUNAKAN ) {
       msr.clear_shift(6);
       msr.clear_shift(8);
-      //TODO: lampu mati
+      //  lampu mati
     } else if ( n12 > BIJI_YANG_DIGUNAKAN ) {
       clear_all_green();
       msr.set_shift(6);
-      //TODO: semua mati
-      //TODO: lampu merah (bijinya lebih)
+      //  semua mati
+      //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 12 LEBIH BIJI !!! -------------");
     }
   }
   if ( A > 0 ) {
     clear_all_green();
     msr.set_shift(14);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)
+    //  semua mati
+    //  lampu merah (bijinya lebih)
     Serial.println("---------- LUMBUNG A LEBIH BIJI !!! -------------");
   }else{
     msr.clear_shift(14);
-    //TODO: semua mati
+    //  semua mati
   }
   if ( B > 0 ) {
     clear_all_green();
-    msr.set_shift(15);
-    //TODO: semua mati
-    //TODO: lampu merah (bijinya lebih)    
+    msr.set_shift(5);
+    //  semua mati
+    //  lampu merah (bijinya lebih)    
     Serial.println("---------- LUMBUNG B LEBIH BIJI !!! -------------");
   }else{
-    msr.clear_shift(15);
-    //TODO: semua mati
+    msr.clear_shift(5);
+    //  semua mati
   }
 
   if( (BIJI_YANG_DIGUNAKAN==3) ){
@@ -978,7 +1248,7 @@ void detect_if_biji_dimasukkan() {
       p4 = n4;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(22);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 4 !!! -------------");
     } else if ( (p5 + 1 == n5) && (lumbung_sekarang == 4) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 1) && (p5 == 0) && (biji_ditangan == 1) ) {
@@ -990,14 +1260,14 @@ void detect_if_biji_dimasukkan() {
       p5 = n5;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(16);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 5 !!! -------------");
     } else if ( (pA + 1 == A) && (lumbung_sekarang == 5) && (giliran_pemain == 1) && (BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
       lumbung_sekarang = lA;
       pA = A;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(13);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = A !!! -------------");
     } else if ( (p10 + 1 == n10) && (lumbung_sekarang == 5) && (giliran_pemain == 2) && (BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 2) && (p10 == 0) && (biji_ditangan == 1) ) {
@@ -1009,7 +1279,7 @@ void detect_if_biji_dimasukkan() {
       p10 = n10;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(10);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 10 !!! -------------");
     } else if ( (p11 + 1 == n11) && (lumbung_sekarang == 10) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 2) && (p11 == 0) && (biji_ditangan == 1) ) {
@@ -1021,7 +1291,7 @@ void detect_if_biji_dimasukkan() {
       p11 = n11;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(0);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 11 !!! -------------");
     } else if ( (p12 + 1 == n12) && (lumbung_sekarang == 11) && (BIJI_YANG_DIGUNAKAN==7 || BIJI_YANG_DIGUNAKAN==6 || BIJI_YANG_DIGUNAKAN==5 || BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 2) && (p12 == 0) && (biji_ditangan == 1) ) {
@@ -1033,14 +1303,14 @@ void detect_if_biji_dimasukkan() {
       p12 = n12;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(8);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 12 !!! -------------");
     } else if ( (pB + 1 == B) && (lumbung_sekarang == 12) && (giliran_pemain == 2) && (BIJI_YANG_DIGUNAKAN==3) ) {
       lumbung_sekarang = lB;
       pB = B;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(3);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = B !!! -------------");
     } else if ( (p3 + 1 == n3) && (lumbung_sekarang == 12) && (giliran_pemain == 1) && (BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 1) && (p3 == 0) && (biji_ditangan == 1) ) {
@@ -1052,7 +1322,7 @@ void detect_if_biji_dimasukkan() {
       p3 = n3;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(18);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 3 !!! -------------");
     } else if ( (p10 + 1 == n10) && (lumbung_sekarang == lA) && (giliran_pemain == 1) && (BIJI_YANG_DIGUNAKAN==4 || BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 1) && (p10 == 0) && (biji_ditangan == 1) ) {
@@ -1062,7 +1332,7 @@ void detect_if_biji_dimasukkan() {
       p10 = n10;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(10);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 10 !!! -------------");
     } else if ( (p3 + 1 == n3) && (lumbung_sekarang == lB) && (giliran_pemain == 2) && (BIJI_YANG_DIGUNAKAN==3) ) {
       if ( (giliran_pemain == 2) && (p3 == 0) && (biji_ditangan == 1) ) {
@@ -1072,7 +1342,7 @@ void detect_if_biji_dimasukkan() {
       p3 = n3;
       biji_ditangan = biji_ditangan - 1;
       msr.clear_shift(18);
-      //TODO: semua mati
+      //  semua mati
       Serial.println("---------- LUMBUNG SEKARANG = 3 !!! -------------");
     } else {
       check_aturan();
@@ -1081,16 +1351,16 @@ void detect_if_biji_dimasukkan() {
 }
 
 void printValue() {
-  Serial.print( "Biji ditangan: " );
-  Serial.print(biji_ditangan);
-  Serial.print( " # Lumbung sekarang: " );
-  Serial.print(lumbung_sekarang);
-  Serial.print( " # giliran: " );
-  Serial.print(giliran_pemain);
-  Serial.print( " # lumbung dipakai: " );
-  Serial.print(BIJI_YANG_DIGUNAKAN);
-  Serial.print( " # state: " );
-  Serial.println(GAME_STATE);
+  // Serial.print( "Biji ditangan: " );
+  // Serial.print(biji_ditangan);
+  // Serial.print( " # Lumbung sekarang: " );
+  // Serial.print(lumbung_sekarang);
+  // Serial.print( " # giliran: " );
+  // Serial.print(giliran_pemain);
+  // Serial.print( " # lumbung dipakai: " );
+  // Serial.print(BIJI_YANG_DIGUNAKAN);
+  // Serial.print( " # state: " );
+  // Serial.println(GAME_STATE);
 
   if( (BIJI_YANG_DIGUNAKAN==3) ){
       Serial.print( " # r3: " );
@@ -1161,7 +1431,11 @@ void detect3() {
   if (r3 < 0) {
     r3 = 0.00;
   }
-  n3 = round(r3 - 1) / AVG_BIJI;
+  n3 = round(r3 - 2) / AVG_BIJI;
+   float val = (r3 - 2) - (n3 * AVG_BIJI);
+   if (val > TOLERANSI){
+     n3 = n3+1;
+   }
 }
 
 void detect4() {
@@ -1172,6 +1446,10 @@ void detect4() {
     r4 = 0.00;
   }
   n4 = round(r4) / AVG_BIJI;
+   float val = r4 - (n4 * AVG_BIJI);
+   if (val > TOLERANSI){
+     n4 = n4+1;
+   }
 }
 
 void detect5() {
@@ -1182,6 +1460,10 @@ void detect5() {
     r5 = 0.00;
   }
   n5 = round(r5) / AVG_BIJI;
+   float val = r5 - (n5 * AVG_BIJI);
+   if (val > TOLERANSI){
+     n5 = n5+1;
+   }
 }
 
 void detect10() {
@@ -1192,6 +1474,10 @@ void detect10() {
     r10 = 0.00;
   }
   n10 = round(r10) / AVG_BIJI;
+   float val = r10 - (n10 * AVG_BIJI);
+   if (val > TOLERANSI){
+     n10 = n10+1;
+   }
 }
 
 void detect11() {
@@ -1202,6 +1488,10 @@ void detect11() {
     r11 = 0.00;
   }
   n11 = round(r11) / AVG_BIJI;
+   float val = r11 - (n11 * AVG_BIJI);
+   if (val > TOLERANSI){
+     n11 = n11+1;
+   }
 }
 
 void detect12() {
@@ -1212,6 +1502,10 @@ void detect12() {
     r12 = 0.00;
   }
   n12 = round(r12) / AVG_BIJI;
+   float val = r12 - (n12 * AVG_BIJI);
+   if (val > TOLERANSI){
+     n12 = n12+1;
+   }
 }
 
 void detectA() {
@@ -1222,6 +1516,10 @@ void detectA() {
     rA = 0.00;
   }
   A = round(rA) / AVG_BIJI;
+   float val = rA - (A * AVG_BIJI);
+   if (val > TOLERANSI){
+     A = A+1;
+   }
 }
 
 void detectB() {
@@ -1232,5 +1530,9 @@ void detectB() {
     rB = 0.00;
   }
   B = round(rB) / AVG_BIJI;
+   float val = rB - (B * AVG_BIJI);
+   if (val > TOLERANSI){
+     B = B+1;
+   }
 }
 
