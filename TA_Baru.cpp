@@ -187,10 +187,10 @@ void congklak_game() {
         msr.set_shift(20);
         Serial.print( "FIXED wc3: " );
         Serial.println(wc3);
-      }else if(!rt3 && r3>BATAS_ATAS){
+      }else if(!rt3 && r3>BATAS_ATAS && r3 > 20){
         wc3 = wc3 - 1;
         msr.clear_shift(20);
-      }else if(!rt3 && r3<BATAS_BAWAH){
+      }else if(!rt3 && r3<BATAS_BAWAH && r3 > 20){
         wc3 = wc3 + 1;
         msr.clear_shift(20);
       }
@@ -199,10 +199,10 @@ void congklak_game() {
         msr.set_shift(21);
         Serial.print( "FIXED wc4: " );
         Serial.println(wc4);
-      }else if(!rt4 && r4>BATAS_ATAS){
+      }else if(!rt4 && r4>BATAS_ATAS && r4 > 20){
         wc4 = wc4 - 1;
         msr.clear_shift(21);
-      }else if(!rt4 && r4<BATAS_BAWAH){
+      }else if(!rt4 && r4<BATAS_BAWAH && r4 > 20){
         wc4 = wc4 + 1;
         msr.clear_shift(21);
       }
@@ -211,10 +211,10 @@ void congklak_game() {
         msr.set_shift(17);
         Serial.print( "FIXED wc5: " );
         Serial.println(wc5);
-      }else if(!rt5 && r5>BATAS_ATAS){
+      }else if(!rt5 && r5>BATAS_ATAS && r5 > 20){
         wc5 = wc5 - 1;
         msr.clear_shift(17);
-      }else if(!rt5 && r5<BATAS_BAWAH){
+      }else if(!rt5 && r5<BATAS_BAWAH && r5 > 20){
         wc5 = wc5 + 1;
         msr.clear_shift(17);
       }
@@ -223,10 +223,10 @@ void congklak_game() {
         msr.set_shift(11);
         Serial.print( "FIXED wc10: " );
         Serial.println(wc10);
-      }else if(!rt10 && r10>BATAS_ATAS){
+      }else if(!rt10 && r10>BATAS_ATAS && r10 > 20){
         wc10 = wc10 - 1;
         msr.clear_shift(11);
-      }else if(!rt10 && r10<BATAS_BAWAH){
+      }else if(!rt10 && r10<BATAS_BAWAH && r10 > 20){
         wc10 = wc10 + 1;
         msr.clear_shift(11);
       }
@@ -235,10 +235,10 @@ void congklak_game() {
         msr.set_shift(2);
         Serial.print( "FIXED wc11: " );
         Serial.println(wc11);
-      }else if(!rt11 && r11>BATAS_ATAS){
+      }else if(!rt11 && r11>BATAS_ATAS && r11 > 20){
         wc11 = wc11 - 1;
         msr.clear_shift(2);
-      }else if(!rt11 && r11<BATAS_BAWAH){
+      }else if(!rt11 && r11<BATAS_BAWAH && r11 > 20){
         wc11 = wc11 + 1;
         msr.clear_shift(2);
       }
@@ -247,10 +247,10 @@ void congklak_game() {
         msr.set_shift(7);
         Serial.print( "FIXED wc12: " );
         Serial.println(wc12);
-      }else if(!rt12 && r12>BATAS_ATAS){
+      }else if(!rt12 && r12>BATAS_ATAS && r12 > 20){
         wc12 = wc12 - 1;
         msr.clear_shift(7);
-      }else if(!rt12 && r12<BATAS_BAWAH){
+      }else if(!rt12 && r12<BATAS_BAWAH && r12 > 20){
         wc12 = wc12 + 1;
         msr.clear_shift(7);
       }
@@ -259,10 +259,10 @@ void congklak_game() {
         msr.set_shift(12);
         Serial.print( "FIXED wcA: " );
         Serial.println(wcA);
-      }else if(!rtA && rA>BATAS_ATAS){
+      }else if(!rtA && rA>BATAS_ATAS && rA > 20){
         wcA = wcA - 1;
         msr.clear_shift(12);
-      }else if(!rtA && rA<BATAS_BAWAH){
+      }else if(!rtA && rA<BATAS_BAWAH && rA > 20){
         wcA = wcA + 1;
         msr.clear_shift(12);
       }
@@ -271,10 +271,10 @@ void congklak_game() {
         msr.set_shift(4);
         Serial.print( "FIXED wcB: " );
         Serial.println(wcB);
-      }else if(!rtB && rB>BATAS_ATAS){
+      }else if(!rtB && rB>BATAS_ATAS && rB > 20){
         wcB = wcB - 1;
         msr.clear_shift(4);
-      }else if(!rtB && rB<BATAS_BAWAH){
+      }else if(!rtB && rB<BATAS_BAWAH && rB > 20){
         wcB = wcB + 1;
         msr.clear_shift(4);
       }
