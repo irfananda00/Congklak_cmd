@@ -848,7 +848,7 @@ void check_aturan() {
     msr.clear_shift(19);
     //  lampu mati
   }else if ( n3 < p3 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(18);
     msr.clear_shift(19);
     //  semua hijau mati
@@ -859,7 +859,7 @@ void check_aturan() {
     msr.clear_shift(19);
     //  lampu mati
   } else if ( n3 > p3 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(19);
     msr.clear_shift(18);
     //  semua hijau mati
@@ -871,7 +871,7 @@ void check_aturan() {
     msr.clear_shift(23);
     //  lampu mati
   }else if ( n4 < p4 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(22);
     msr.clear_shift(23);
     //  semua mati
@@ -882,7 +882,7 @@ void check_aturan() {
     msr.clear_shift(23);
     //  lampu mati
   } else if ( n4 > p4 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(23);
     msr.clear_shift(22);
     //  semua mati
@@ -894,7 +894,7 @@ void check_aturan() {
     msr.clear_shift(15);
     //  lampu mati
   }else if ( n5 < p5 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(16);
     msr.clear_shift(15);
     //  semua mati
@@ -905,7 +905,7 @@ void check_aturan() {
     msr.clear_shift(15);
     //  lampu mati
   } else if ( n5 > p5 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(15);
     msr.clear_shift(16);
     //  semua mati
@@ -917,7 +917,7 @@ void check_aturan() {
     msr.clear_shift(9);
     //  lampu mati
   }else if ( n10 < p10 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(10);
     msr.clear_shift(9);
     //  semua mati
@@ -928,7 +928,7 @@ void check_aturan() {
     msr.clear_shift(9);
     //  lampu mati
   } else if ( n10 > p10 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(9);
     msr.clear_shift(10);
     //  semua mati
@@ -940,7 +940,7 @@ void check_aturan() {
     msr.clear_shift(0);
     //  lampu mati
   }else if ( n11 < p11 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(0);
     msr.clear_shift(1);
     //  semua mati
@@ -951,7 +951,7 @@ void check_aturan() {
     msr.clear_shift(0);
     //  lampu mati
   } else if ( n11 > p11 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(1);
     msr.clear_shift(0);
     //  semua mati
@@ -963,7 +963,7 @@ void check_aturan() {
     msr.clear_shift(8);
     //  lampu mati
   }else if ( n12 < p12 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(8);
     msr.clear_shift(6);
     //  semua mati
@@ -974,7 +974,7 @@ void check_aturan() {
     msr.clear_shift(8);
     //  lampu mati
   } else if ( n12 > p12 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(6);
     msr.clear_shift(8);
     //  semua mati
@@ -982,7 +982,7 @@ void check_aturan() {
     Serial.println("---------- LUMBUNG 12 LEBIH BIJI !!! -------------");
   }
   if ( A < pA ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(13);
     msr.clear_shift(14);
     //  semua mati
@@ -993,7 +993,7 @@ void check_aturan() {
     msr.clear_shift(13);
     //  lampu mati
   } else if ( A > pA ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(14);
     msr.clear_shift(13);
     //  semua mati
@@ -1001,7 +1001,7 @@ void check_aturan() {
     Serial.println("---------- LUMBUNG A LEBIH BIJI !!! -------------");
   }
   if ( B < pB ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(3);
     msr.clear_shift(5);
     //  semua mati
@@ -1012,7 +1012,7 @@ void check_aturan() {
     msr.clear_shift(3);
     //  lampu mati
   } else if ( B > pB ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(5);
     msr.clear_shift(3);
     //  semua mati
@@ -1027,14 +1027,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     msr.clear_shift(19);
     // do nothing
   }else if ( lumb1 != 3 && n3 < p3 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(18);
     msr.clear_shift(19);
     //  semua hijau mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 3 KURANG BIJI !!! -------------");    
   } else if ( n3 > p3 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(19);
     msr.clear_shift(18);
     //  semua hijau mati
@@ -1050,14 +1050,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     msr.clear_shift(23);
     // do nothing
   }else if ( lumb1 != 4 && n4 < p4 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(22);
     msr.clear_shift(23);
     //  semua mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 4 KURANG BIJI !!! -------------");
   } else if ( n4 > p4 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(23);
     msr.clear_shift(22);
     //  semua mati
@@ -1073,14 +1073,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     msr.clear_shift(15);
     // do nothing
   }else if ( lumb1 != 5 && n5 < p5 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(16);
     msr.clear_shift(15);
     //  semua mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 5 KURANG BIJI !!! -------------");
   } else if ( n5 > p5 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(15);
     msr.clear_shift(16);
     //  semua mati
@@ -1096,14 +1096,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     msr.clear_shift(9);
     // do nothing
   }else if ( lumb2 != 10 && n10 < p10 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(10);
     msr.clear_shift(9);
     //  semua mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 10 KURANG BIJI !!! -------------");
   } else if ( n10 > p10 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(9);
     msr.clear_shift(10);
     //  semua mati
@@ -1119,14 +1119,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     msr.clear_shift(1);
     // do nothing
   }else if ( lumb2 != 11 && n11 < p11 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(0);
     msr.clear_shift(1);
     //  semua mati
     //  lampu kuning (bijinya kurang)    
     Serial.println("---------- LUMBUNG 11 KURANG BIJI !!! -------------");
   } else if ( n11 > p11 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(1);
     msr.clear_shift(0);
     //  semua mati
@@ -1142,14 +1142,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     msr.clear_shift(8);
     // do nothing
   }else if ( lumb2 != 12 && n12 < p12 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(8);
     msr.clear_shift(6);
     //  semua mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG 12 KURANG BIJI !!! -------------");
   } else if ( n12 > p12 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(6);
     msr.clear_shift(8);
     //  semua mati
@@ -1161,14 +1161,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     //  lampu mati
   }
   if ( A < pA ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(13);
     msr.clear_shift(14);
     //  semua mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG A KURANG BIJI !!! -------------");
   } else if ( A > pA ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(14);
     msr.clear_shift(13);
     //  semua mati
@@ -1180,14 +1180,14 @@ void check_aturan_tembak(int lumb1, int lumb2) {
     //  lampu mati
   }
   if ( B < pB ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(3);
     msr.clear_shift(5);
     //  semua mati
     //  lampu kuning (bijinya kurang)
     Serial.println("---------- LUMBUNG B KURANG BIJI !!! -------------");
   } else if ( B > pB ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(5);
     msr.clear_shift(3);
     //  semua mati
@@ -1205,8 +1205,9 @@ bool isSudahSiapMain() {
     if( n3 > 70 ){
     // do nothing
     }else if ( n3 < BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(18);
+      msr.clear_shift(19);
       //  semua mati
       //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 3 KURANG BIJI !!! -------------");
@@ -1215,8 +1216,9 @@ bool isSudahSiapMain() {
       msr.clear_shift(18);
       //  lampu mati
     } else if ( n3 > BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(19);
+      msr.clear_shift(18);
       //  semua mati
       //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 3 LEBIH BIJI !!! -------------");
@@ -1226,8 +1228,9 @@ bool isSudahSiapMain() {
     if( n4 > 70 ){
     // do nothing
     }else if ( n4 < BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(22);
+      msr.clear_shift(23);
       //  semua mati
       //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 4 KURANG BIJI !!! -------------");
@@ -1236,8 +1239,9 @@ bool isSudahSiapMain() {
       msr.clear_shift(22);
       //  lampu mati
     } else if ( n4 > BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(23);
+      msr.clear_shift(22);
       //  semua mati
       //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 4 LEBIH BIJI !!! -------------");
@@ -1247,8 +1251,9 @@ bool isSudahSiapMain() {
     if( n5 > 70 ){
     // do nothing
     }else if ( n5 < BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(16);
+      msr.clear_shift(15);
       //  semua mati
       //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 5 KURANG BIJI !!! -------------");
@@ -1257,8 +1262,9 @@ bool isSudahSiapMain() {
       msr.clear_shift(16);
       //  lampu mati
     } else if ( n5 > BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(15);
+      msr.clear_shift(16);
       //  semua mati
       //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 5 LEBIH BIJI !!! -------------");
@@ -1268,8 +1274,9 @@ bool isSudahSiapMain() {
     if( n10 > 70 ){
     // do nothing
     }else if ( n10 < BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(10);
+      msr.clear_shift(9);
       //  semua mati
       //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 10 KURANG BIJI !!! -------------");
@@ -1278,8 +1285,9 @@ bool isSudahSiapMain() {
       msr.clear_shift(10);
       //  lampu mati
     } else if ( n10 > BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(9);
+      msr.clear_shift(10);
       //  semua mati
       //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 10 LEBIH BIJI !!! -------------");
@@ -1289,8 +1297,9 @@ bool isSudahSiapMain() {
     if( n11 > 70 ){
     // do nothing
     }else if ( n11 < BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(0);
+      msr.clear_shift(1);
       //  semua mati
       //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 11 KURANG BIJI !!! -------------");
@@ -1299,8 +1308,9 @@ bool isSudahSiapMain() {
       msr.clear_shift(0);
       //  lampu mati
     } else if ( n11 > BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(1);
+      msr.clear_shift(0);
       //  semua mati
       //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 11 LEBIH BIJI !!! -------------");
@@ -1310,8 +1320,9 @@ bool isSudahSiapMain() {
     if( n12 > 70 ){
     // do nothing
     }else if ( n12 < BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(8);
+      msr.clear_shift(6);
       //  semua mati
       //  lampu kuning (bijinya kurang)
       Serial.println("---------- LUMBUNG 12 KURANG BIJI !!! -------------");
@@ -1320,15 +1331,16 @@ bool isSudahSiapMain() {
       msr.clear_shift(8);
       //  lampu mati
     } else if ( n12 > BIJI_YANG_DIGUNAKAN ) {
-      clear_all_green();
+      // clear_all_green();
       msr.set_shift(6);
+      msr.clear_shift(8);
       //  semua mati
       //  lampu merah (bijinya lebih)
       Serial.println("---------- LUMBUNG 12 LEBIH BIJI !!! -------------");
     }
   }
   if ( A > 0 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(14);
     //  semua mati
     //  lampu merah (bijinya lebih)
@@ -1338,7 +1350,7 @@ bool isSudahSiapMain() {
     //  semua mati
   }
   if ( B > 0 ) {
-    clear_all_green();
+    // clear_all_green();
     msr.set_shift(5);
     //  semua mati
     //  lampu merah (bijinya lebih)    
