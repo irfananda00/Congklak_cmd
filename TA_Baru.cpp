@@ -10,7 +10,12 @@ float TOLERANSI = 4.25;
 float BATAS_BAWAH = 100.1;
 float BATAS_ATAS = 100.3;
 
+// float BATAS_BAWAH_3 = 5.0;
+// float BATAS_ATAS_3 = 5.3;
+
 float AVG_BIJI = 5;
+
+bool pilih_ulang_dari_rumah = false;
 
 int lumbung_sekarang = 0;
 int lumbung_pre = -1;
@@ -96,13 +101,13 @@ void initial_state() {
 
 int loopt = 0;
 
-int wc3 = -910; //-900
+int wc3 = -907; //-900
 int n3 = 0;
 float r3 = 0;
 bool rt3 = false;
 int p3 = 0;
 
-int wc4 = -2202; //-2200
+int wc4 = -2295; //-2200
 int n4 = 0;
 float r4 = 0;
 bool rt4 = false;
@@ -114,31 +119,31 @@ float r5 = 0;
 bool rt5 = false;
 int p5 = 0;
 
-int wc10 = -766; //-766
+int wc10 = -765; //-766
 int n10 = 0;
 float r10 = 0;
 bool rt10 = false;
 int p10 = 0;
 
-int wc11 = -866; //-866
+int wc11 = -869; //-866
 int n11 = 0;
 float r11 = 0;
 bool rt11 = false;
 int p11 = 0;
 
-int wc12 = -874; //-885
+int wc12 = -876; //-885
 int n12 = 0;
 float r12 = 0;
 bool rt12 = false;
 int p12 = 0;
 
-int wcA = -807; //-807
+int wcA = -809; //-807
 int A = 0;
 float rA = 0;
 bool rtA = false;
 int pA = 0;
 
-int wcB = -846; //-849
+int wcB = -865; //-849
 int B = 0;
 float rB = 0;
 bool rtB = false;
@@ -237,7 +242,8 @@ void congklak_game() {
       // && (n8!=0 || n9!=0 || n10!=0 || n11!=0 || n12!=0 || n13!=0 || n14!=0)
       if (check_giliran_selesai()) {
         GAME_STATE = 4;
-      } else if ( (lumbung_sekarang == lA && giliran_pemain == 1) ||
+      } else if ( pilih_ulang_dari_rumah ||
+                  (lumbung_sekarang == lA && giliran_pemain == 1) ||
                   (lumbung_sekarang == lB && giliran_pemain == 2) ||
                   (lumbung_sekarang == 0 && giliran_pemain == 1) ||
                   (lumbung_sekarang == 0 && giliran_pemain == 2) ) {                    
@@ -353,23 +359,39 @@ void permainan_selesai() {
   digitalWrite(playerBturn, LOW);
   Serial.println("---------- PERMAINAN SELESAI !!! -------------");
   if (A > B) {
+    msr.set_shift(14);
     msr.set_shift(12);
+    msr.set_shift(13);
     delay(200);
+    msr.clear_shift(14);
     msr.clear_shift(12);
+    msr.clear_shift(13);
     delay(200);
     Serial.println("---------- PEMENANG : PEMAIN 1 -------------");
   } else if (A < B) {
+    msr.set_shift(3);
     msr.set_shift(4);
+    msr.set_shift(5);
     delay(200);
+    msr.clear_shift(3);
     msr.clear_shift(4);
+    msr.clear_shift(5);
     delay(200);
     Serial.println("---------- PEMENANG : PEMAIN 2 -------------");
   } else {
-    msr.set_shift(4);
+    msr.set_shift(14);
     msr.set_shift(12);
+    msr.set_shift(13);
+    msr.set_shift(3);
+    msr.set_shift(4);
+    msr.set_shift(5);
     delay(200);
-    msr.clear_shift(4);
+    msr.clear_shift(14);
     msr.clear_shift(12);
+    msr.clear_shift(13);
+    msr.clear_shift(3);
+    msr.clear_shift(4);
+    msr.clear_shift(5);
     delay(200);
   }
 }
@@ -641,6 +663,7 @@ void detect_lumbung_dipilih_dari_rumah() {
     Serial.println("---------- LUMBUNG 3 DIPILIH !!! -------------");
     lumbung_terpilih = true;
     lumbung_diambil_awal = 3;
+    pilih_ulang_dari_rumah = false;
   } else if ( (p4 != 0) && (n4 == 0) && (n3 == p3) && (n5 == p5)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
     lumbung_pre = lumbung_sekarang;
     lumbung_sekarang = 4;
@@ -651,6 +674,7 @@ void detect_lumbung_dipilih_dari_rumah() {
     Serial.println("---------- LUMBUNG 4 DIPILIH !!! -------------");
     lumbung_terpilih = true;
     lumbung_diambil_awal = 4;
+    pilih_ulang_dari_rumah = false;
   } else if ( (p5 != 0) && (n5 == 0)  && (n3 == p3) && (n4 == p4)  && (n10 == p10) && (n11 == p11) && (n12 == p12)   && ((lumbung_sekarang == lA) || (lumbung_sekarang == 0)) && (giliran_pemain == 1) ) {
     lumbung_pre = lumbung_sekarang;
     lumbung_sekarang = 5;
@@ -661,6 +685,7 @@ void detect_lumbung_dipilih_dari_rumah() {
     Serial.println("---------- LUMBUNG 5 DIPILIH !!! -------------");
     lumbung_terpilih = true;
     lumbung_diambil_awal = 5;
+    pilih_ulang_dari_rumah = false;
   } else if ( (p10 != 0) && (n10 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n11 == p11) && (n12 == p12)   && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
     lumbung_pre = lumbung_sekarang;
     lumbung_sekarang = 10;
@@ -671,6 +696,7 @@ void detect_lumbung_dipilih_dari_rumah() {
     Serial.println("---------- LUMBUNG 10 DIPILIH !!! -------------");
     lumbung_terpilih = true;
     lumbung_diambil_awal = 10;
+    pilih_ulang_dari_rumah = false;
   } else if ( (p11 != 0) && (n11 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n12 == p12)   && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
     lumbung_pre = lumbung_sekarang;
     lumbung_sekarang = 11;
@@ -681,6 +707,7 @@ void detect_lumbung_dipilih_dari_rumah() {
     Serial.println("---------- LUMBUNG 11 DIPILIH !!! -------------");
     lumbung_terpilih = true;
     lumbung_diambil_awal = 11;
+    pilih_ulang_dari_rumah = false;
   } else if ( (p12 != 0) && (n12 == 0)  && (n3 == p3) && (n4 == p4) && (n5 == p5)  && (n10 == p10) && (n11 == p11)   && ((lumbung_sekarang == lB) || (lumbung_sekarang == 0)) && (giliran_pemain == 2) ) {
     lumbung_pre = lumbung_sekarang;
     lumbung_sekarang = 12;
@@ -691,6 +718,7 @@ void detect_lumbung_dipilih_dari_rumah() {
     Serial.println("---------- LUMBUNG 12 DIPILIH !!! -------------");
     lumbung_terpilih = true;
     lumbung_diambil_awal = 12;
+    pilih_ulang_dari_rumah = false;
   } else {
     if(GAME_STATE == 1 || GAME_STATE == 2){
         check_if_pilih_ulang();      
@@ -710,6 +738,9 @@ void check_if_pilih_ulang(){
     Serial.println("---------- LUMBUNG 3 DIKEMBALIKAN !!! -------------");
     Serial.print("LUMBUNG PRE = ");
     Serial.println(lumbung_pre);    
+    if(lumbung_pre == lA || lumbung_pre == lB){
+      pilih_ulang_dari_rumah = true;
+    }
     preP = -1;
     lumbung_pre = -1;
     lumbung_diambil_awal = -1;
@@ -721,7 +752,10 @@ void check_if_pilih_ulang(){
     lumbung_sekarang = lumbung_pre; 
     Serial.println("---------- LUMBUNG 4 DIKEMBALIKAN !!! -------------");
     Serial.print("LUMBUNG PRE = ");
-    Serial.println(lumbung_pre);   
+    Serial.println(lumbung_pre);  
+    if(lumbung_pre == lA || lumbung_pre == lB){
+      pilih_ulang_dari_rumah = true;
+    } 
     preP = -1;
     lumbung_pre = -1;
     lumbung_diambil_awal = -1;
@@ -734,6 +768,9 @@ void check_if_pilih_ulang(){
     Serial.println("---------- LUMBUNG 5 DIKEMBALIKAN !!! -------------");
     Serial.print("LUMBUNG PRE = ");
     Serial.println(lumbung_pre);    
+    if(lumbung_pre == lA || lumbung_pre == lB){
+      pilih_ulang_dari_rumah = true;
+    }
     preP = -1;
     lumbung_pre = -1;
     lumbung_diambil_awal = -1;
@@ -746,6 +783,9 @@ void check_if_pilih_ulang(){
     Serial.println("---------- LUMBUNG 10 DIKEMBALIKAN !!! -------------");
     Serial.print("LUMBUNG PRE = ");
     Serial.println(lumbung_pre);    
+    if(lumbung_pre == lA || lumbung_pre == lB){
+      pilih_ulang_dari_rumah = true;
+    }
     preP = -1;
     lumbung_pre = -1;
     lumbung_diambil_awal = -1;
@@ -758,6 +798,9 @@ void check_if_pilih_ulang(){
     Serial.println("---------- LUMBUNG 11 DIKEMBALIKAN !!! -------------");
     Serial.print("LUMBUNG PRE = ");
     Serial.println(lumbung_pre);    
+    if(lumbung_pre == lA || lumbung_pre == lB){
+      pilih_ulang_dari_rumah = true;
+    }
     preP = -1;
     lumbung_pre = -1;
     lumbung_diambil_awal = -1;
@@ -770,6 +813,9 @@ void check_if_pilih_ulang(){
     Serial.println("---------- LUMBUNG 12 DIKEMBALIKAN !!! -------------");
     Serial.print("LUMBUNG PRE = ");
     Serial.println(lumbung_pre);    
+    if(lumbung_pre == lA || lumbung_pre == lB){
+      pilih_ulang_dari_rumah = true;
+    }
     preP = -1;
     lumbung_pre = -1;
     lumbung_diambil_awal = -1;
@@ -1683,18 +1729,18 @@ void kalibrasi_berat(){
 }
 
 void printValue() {
-  Serial.print( "Biji ditangan: " );
-  Serial.print(biji_ditangan);
-  Serial.print( " # Lumbung sekarang: " );
-  Serial.print(lumbung_sekarang);
-  Serial.print( " # giliran: " );
-  Serial.print(giliran_pemain);
-  Serial.print( " # state: " );
-  Serial.print(GAME_STATE);
-  Serial.print( " # preP: " );
-  Serial.print(preP);
-  Serial.print( " # lumbung_diambil_awal: " );
-  Serial.println(lumbung_diambil_awal);
+  // Serial.print( "Biji ditangan: " );
+  // Serial.print(biji_ditangan);
+  // Serial.print( " # Lumbung sekarang: " );
+  // Serial.print(lumbung_sekarang);
+  // Serial.print( " # giliran: " );
+  // Serial.print(giliran_pemain);
+  // Serial.print( " # state: " );
+  // Serial.print(GAME_STATE);
+  // Serial.print( " # preP: " );
+  // Serial.print(preP);
+  // Serial.print( " # lumbung_diambil_awal: " );
+  // Serial.println(lumbung_diambil_awal);
 
       Serial.print( " # r3: " );
       Serial.print(r3);
@@ -1763,8 +1809,8 @@ void detect3() {
   if (r3 < 0) {
     r3 = 0.00;
   }
-  n3 = round(r3) / AVG_BIJI;
-   float val = (r3) - (n3 * AVG_BIJI);
+  n3 = round(r3 - 1.4) / AVG_BIJI;
+   float val = (r3 - 1.4) - (n3 * AVG_BIJI);
    if (val > TOLERANSI){
      n3 = n3+1;
    }
@@ -1778,7 +1824,7 @@ void detect4() {
     r4 = 0.00;
   }
   n4 = round(r4) / AVG_BIJI;
-   float val = r4 - (n4 * AVG_BIJI);
+   float val = (r4) - (n4 * AVG_BIJI);
    if (val > TOLERANSI){
      n4 = n4+1;
    }
@@ -1806,7 +1852,7 @@ void detect10() {
     r10 = 0.00;
   }
   n10 = round(r10) / AVG_BIJI;
-   float val = r10 - (n10 * AVG_BIJI);
+   float val = (r10) - (n10 * AVG_BIJI);
    if (val > TOLERANSI){
      n10 = n10+1;
    }
