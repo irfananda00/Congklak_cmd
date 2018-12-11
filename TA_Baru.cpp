@@ -3,15 +3,11 @@
 #include <MultiShiftRegister.h>
 
 int BIJI_YANG_DIGUNAKAN = 3;
-int TEMP_BIJI = 3;
 float TOLERANSI = 4.25;
 //float TOLERANSI_R = 4.75;
 
 float BATAS_BAWAH = 100.1;
 float BATAS_ATAS = 100.3;
-
-// float BATAS_BAWAH_3 = 5.0;
-// float BATAS_ATAS_3 = 5.3;
 
 float AVG_BIJI = 5;
 
@@ -45,7 +41,7 @@ int lB = 16;
 
  MultiShiftRegister msr (numberOfRegisters , latchPin, clockPin, dataPin);
 
-int GAME_STATE = 0;
+int GAME_STATE = -1;
 // -1 = KALIBRASI BERAT SENSOR
 // 0 = PERSIAPAN PERMAINAN, memasukkan biji ke lumbung 3 x 6
 // 1 = PEMAIN MEMILIH LUMBUNG, pemain mengambil semua biji dari 1 lumbung
@@ -99,51 +95,58 @@ void initial_state() {
   cellB.tare();
 }
 
-int loopt = 0;
+float subs3 = 1;
+float subs4 = 0;
+float subs5 = 0;
+float subs10 = 0;
+float subs11 = 0;
+float subs12 = 0;
+float subsA = 0;
+float subsB = 0;
 
-int wc3 = -907; //-900
+int wc3 = -909; //-909
 int n3 = 0;
 float r3 = 0;
 bool rt3 = false;
 int p3 = 0;
 
-int wc4 = -2295; //-2200
+int wc4 = -2200; //-2200
 int n4 = 0;
 float r4 = 0;
 bool rt4 = false;
 int p4 = 0;
 
-int wc5 = -1161; //-1160
+int wc5 = -1159; //-1159
 int n5 = 0;
 float r5 = 0;
 bool rt5 = false;
 int p5 = 0;
 
-int wc10 = -765; //-766
+int wc10 = -767; //-767
 int n10 = 0;
 float r10 = 0;
 bool rt10 = false;
 int p10 = 0;
 
-int wc11 = -869; //-866
+int wc11 = -865; //-865
 int n11 = 0;
 float r11 = 0;
 bool rt11 = false;
 int p11 = 0;
 
-int wc12 = -876; //-885
+int wc12 = -868; //-868
 int n12 = 0;
 float r12 = 0;
 bool rt12 = false;
 int p12 = 0;
 
-int wcA = -809; //-807
+int wcA = -808; //-808
 int A = 0;
 float rA = 0;
 bool rtA = false;
 int pA = 0;
 
-int wcB = -865; //-849
+int wcB = -848; //-848
 int B = 0;
 float rB = 0;
 bool rtB = false;
@@ -1602,15 +1605,15 @@ void detect_if_biji_dimasukkan() {
 }
 
 void kalibrasi_berat(){
-      if( (r3>=BATAS_BAWAH) && (r3<BATAS_ATAS) ){
+      if( ((r3-subs3)>=BATAS_BAWAH) && ((r3-subs3)<BATAS_ATAS) ){
         rt3 = true;
         msr.set_shift(20);
         Serial.print( "FIXED wc3: " );
         Serial.println(wc3);
-      }else if(!rt3 && r3>BATAS_ATAS && r3 > 20){
+      }else if(!rt3 && (r3-subs3)>BATAS_ATAS && r3 > 20){
         wc3 = wc3 - 1;
         msr.clear_shift(20);
-      }else if(!rt3 && r3<BATAS_BAWAH && r3 > 20){
+      }else if(!rt3 && (r3-subs3)<BATAS_BAWAH && r3 > 20){
         wc3 = wc3 + 1;
         msr.clear_shift(20);
       }
@@ -1686,15 +1689,15 @@ void kalibrasi_berat(){
         wcA = wcA + 1;
         msr.clear_shift(12);
       }
-      if( (rB>=BATAS_BAWAH) && (rB<BATAS_ATAS) ){
+      if( ((rB-subsB)>=BATAS_BAWAH) && ((rB-subsB)<BATAS_ATAS) ){
         rtB = true;
         msr.set_shift(4);
         Serial.print( "FIXED wcB: " );
         Serial.println(wcB);
-      }else if(!rtB && rB>BATAS_ATAS && rB > 20){
+      }else if(!rtB && (rB-subsB)>BATAS_ATAS && rB > 20){
         wcB = wcB - 1;
         msr.clear_shift(4);
-      }else if(!rtB && rB<BATAS_BAWAH && rB > 20){
+      }else if(!rtB && (rB-subsB)<BATAS_BAWAH && rB > 20){
         wcB = wcB + 1;
         msr.clear_shift(4);
       }
@@ -1729,18 +1732,36 @@ void kalibrasi_berat(){
 }
 
 void printValue() {
-  // Serial.print( "Biji ditangan: " );
-  // Serial.print(biji_ditangan);
-  // Serial.print( " # Lumbung sekarang: " );
-  // Serial.print(lumbung_sekarang);
-  // Serial.print( " # giliran: " );
-  // Serial.print(giliran_pemain);
-  // Serial.print( " # state: " );
-  // Serial.print(GAME_STATE);
-  // Serial.print( " # preP: " );
-  // Serial.print(preP);
-  // Serial.print( " # lumbung_diambil_awal: " );
-  // Serial.println(lumbung_diambil_awal);
+//   Serial.print( "Biji ditangan: " );
+//   Serial.print(biji_ditangan);
+//   Serial.print( " # Lumbung sekarang: " );
+//   Serial.print(lumbung_sekarang);
+//   Serial.print( " # giliran: " );
+//   Serial.print(giliran_pemain);
+//   Serial.print( " # state: " );
+//   Serial.print(GAME_STATE);
+//   Serial.print( " # preP: " );
+//   Serial.print(preP);
+//   Serial.print( " # lumbung_diambil_awal: " );
+//   Serial.println(lumbung_diambil_awal);
+
+//      Serial.print( " # subs3: " );
+//      Serial.print(subs3);
+//      Serial.print( " # subs4: " );
+//      Serial.print(subs4);
+//      Serial.print( " # subs5: " );
+//      Serial.print(subs5);
+//      Serial.print( " # subsA: " );
+//      Serial.print(subsA);
+//      Serial.print( "  ## " );
+//      Serial.print( " # subs10: " );
+//      Serial.print(subs10);
+//      Serial.print( " # subs11: " );
+//      Serial.print(subs11);
+//      Serial.print( " # subs12: " );
+//      Serial.print(subs12);
+//      Serial.print( " # subsB: " );
+//      Serial.println(subsB);
 
       Serial.print( " # r3: " );
       Serial.print(r3);
@@ -1759,8 +1780,7 @@ void printValue() {
       Serial.print(r12);
       Serial.print( " # rB: " );
       Serial.println(rB);
-//
-// if( (BIJI_YANG_DIGUNAKAN==3) ){
+
 //     Serial.print( " # p3: " );
 //     Serial.print(p3);
 //     Serial.print( " # p4: " );
@@ -1778,27 +1798,24 @@ void printValue() {
 //     Serial.print(p12);
 //     Serial.print( " # pB: " );
 //     Serial.println(pB);
-// }
 //
-// if( (BIJI_YANG_DIGUNAKAN==3) ){
-//     Serial.print( " # n3: " );
-//     Serial.print(n3);
-//     Serial.print( " # n4: " );
-//     Serial.print(n4);
-//     Serial.print( " # n5: " );
-//     Serial.print(n5);
-//     Serial.print( " #  A: " );
-//     Serial.print(A);
-//     Serial.print( "  ## " );
-//     Serial.print( " # n10: " );
-//     Serial.print(n10);
-//     Serial.print( " # n11: " );
-//     Serial.print(n11);
-//     Serial.print( " # n12: " );
-//     Serial.print(n12);
-//     Serial.print( " #  B: " );
-//     Serial.println(B);
-// }
+//    Serial.print( " # n3: " );
+//    Serial.print(n3);
+//    Serial.print( " # n4: " );
+//    Serial.print(n4);
+//    Serial.print( " # n5: " );
+//    Serial.print(n5);
+//    Serial.print( " #  A: " );
+//    Serial.print(A);
+//    Serial.print( "  ## " );
+//    Serial.print( " # n10: " );
+//    Serial.print(n10);
+//    Serial.print( " # n11: " );
+//    Serial.print(n11);
+//    Serial.print( " # n12: " );
+//    Serial.print(n12);
+//    Serial.print( " #  B: " );
+//    Serial.println(B);
   
 }
 
@@ -1809,11 +1826,16 @@ void detect3() {
   if (r3 < 0) {
     r3 = 0.00;
   }
-  n3 = round(r3 - 1.4) / AVG_BIJI;
-   float val = (r3 - 1.4) - (n3 * AVG_BIJI);
+  n3 = round(r3 - subs3) / AVG_BIJI;
+   float val = (r3 - subs3) - (n3 * AVG_BIJI);
    if (val > TOLERANSI){
      n3 = n3+1;
    }
+  // if (r3 >= 1 && r3 <= 2 && n3 == 0){
+  //   subs3 = r3;
+  // }else if (r3 < 0.9 && n3 == 0){
+  //   subs3 = 0;
+  // }
 }
 
 void detect4() {
@@ -1823,11 +1845,16 @@ void detect4() {
   if (r4 < 0) {
     r4 = 0.00;
   }
-  n4 = round(r4) / AVG_BIJI;
-   float val = (r4) - (n4 * AVG_BIJI);
+  n4 = round(r4 - subs4) / AVG_BIJI;
+   float val = (r4 - subs4) - (n4 * AVG_BIJI);
    if (val > TOLERANSI){
      n4 = n4+1;
    }
+  // if (r4 >= 1 && r4 <= 2 && n4 == 0){
+  //   subs4 = r4;
+  // }else if (r4 < 0.9 && n4 == 0){
+  //   subs4 = 0;
+  // }
 }
 
 void detect5() {
@@ -1837,11 +1864,16 @@ void detect5() {
   if (r5 < 0) {
     r5 = 0.00;
   }
-  n5 = round(r5) / AVG_BIJI;
-   float val = r5 - (n5 * AVG_BIJI);
+  n5 = round(r5 - subs5) / AVG_BIJI;
+   float val = (r5 - subs5) - (n5 * AVG_BIJI);
    if (val > TOLERANSI){
      n5 = n5+1;
    }
+  // if (r5 >= 1 && r5 <= 2 && n5 == 0){
+  //   subs5 = r5;
+  // }else if (r5 < 0.9 && n5 == 0){
+  //   subs5 = 0;
+  // }
 }
 
 void detect10() {
@@ -1851,11 +1883,16 @@ void detect10() {
   if (r10 < 0) {
     r10 = 0.00;
   }
-  n10 = round(r10) / AVG_BIJI;
-   float val = (r10) - (n10 * AVG_BIJI);
+  n10 = round(r10 - subs10) / AVG_BIJI;
+   float val = (r10 - subs10) - (n10 * AVG_BIJI);
    if (val > TOLERANSI){
      n10 = n10+1;
    }
+  // if (r10 >= 1 && r10 <= 2 && n10 == 0){
+  //   subs10 = r10;
+  // }else if (r10 < 0.9 && n10 == 0){
+  //   subs10 = 0;
+  // }
 }
 
 void detect11() {
@@ -1865,11 +1902,16 @@ void detect11() {
   if (r11 < 0) {
     r11 = 0.00;
   }
-  n11 = round(r11) / AVG_BIJI;
-   float val = r11 - (n11 * AVG_BIJI);
+  n11 = round(r11 - subs11) / AVG_BIJI;
+   float val = (r11 - subs11) - (n11 * AVG_BIJI);
    if (val > TOLERANSI){
      n11 = n11+1;
    }
+  // if (r11 >= 1 && r11 <= 2 && n11 == 0){
+  //   subs11 = r11;
+  // }else if (r11 < 0.9 && n11 == 0){
+  //   subs11 = 0;
+  // }
 }
 
 void detect12() {
@@ -1879,11 +1921,16 @@ void detect12() {
   if (r12 < 0) {
     r12 = 0.00;
   }
-  n12 = round(r12) / AVG_BIJI;
-   float val = r12 - (n12 * AVG_BIJI);
+  n12 = round(r12 - subs12) / AVG_BIJI;
+   float val = (r12 - subs12) - (n12 * AVG_BIJI);
    if (val > TOLERANSI){
      n12 = n12+1;
    }
+  // if (r12 >= 1 && r12 <= 2 && n12 == 0){
+  //   subs12 = r12;
+  // }else if (r12 < 0.9 && n12 == 0){
+  //   subs12 = 0;
+  // }
 }
 
 void detectA() {
@@ -1893,11 +1940,16 @@ void detectA() {
   if (rA < 0) {
     rA = 0.00;
   }
-  A = round(rA) / AVG_BIJI;
+  A = round(rA - subsA) / AVG_BIJI;
 //   float val = rA - (A * AVG_BIJI);
 //   if (val > TOLERANSI_R){
 //     A = A+1;
 //   }
+  // if (rA >= 1 && rA <= 2 && A == 0){
+  //   subsA = rA;
+  // }else if (rA < 0.9 && A == 0){
+  //   subsA = 0;
+  // }
 }
 
 void detectB() {
@@ -1907,10 +1959,15 @@ void detectB() {
   if (rB < 0) {
     rB = 0.00;
   }
-  B = round(rB) / AVG_BIJI;
+  B = round(rB - subsB) / AVG_BIJI;
 //   float val = rB - (B * AVG_BIJI);
 //   if (val > TOLERANSI_R){
 //     B = B+1;
 //   }
+  // if (rB >= 1 && rB <= 2 && B == 0){
+  //   subsB = rB;
+  // }else if (rB < 0.9 && B == 0){
+  //   subsB = 0;
+  // }
 }
 
